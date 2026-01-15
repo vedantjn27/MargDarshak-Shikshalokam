@@ -76,8 +76,8 @@ app = FastAPI(
 # -------------------- CORS --------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # restrict in prod if needed
-    allow_credentials=False,
+    allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -92,6 +92,10 @@ PyObjectId = Annotated[
 
 def utc_now():
     return datetime.now(timezone.utc)
+
+def serialize_mongo(doc):
+    doc["_id"] = str(doc["_id"])
+    return doc
 
 # -------------------- ALL FUNCTIONALITIES --------------------
 
@@ -160,7 +164,7 @@ def create_organization_profile(payload: OrganizationProfileCreate):
     result = organization_profiles_collection.insert_one(doc)
     doc["_id"] = result.inserted_id
 
-    return doc
+    return serialize_mongo(doc)
 
 # Organization Profile Retrieval Endpoint
 @app.get("/organization/profile/{org_id}", response_model=OrganizationProfileDB)
@@ -176,7 +180,7 @@ def get_organization_profile(org_id: str):
     if not org:
         raise HTTPException(status_code=404, detail="Organization not found")
 
-    return org
+    return serialize_mongo(org)
 
 # -------------------- AI-Powered Context Analysis --------------------
 # AI CONTEXT MODELS
