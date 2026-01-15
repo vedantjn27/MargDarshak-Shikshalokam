@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+pydantic
+pymongo
+python-dotenv
+typing-extensions
+reportlab
+matplotlib
+networkx
+openpyxl
+python-docx
+python-pptx
+googletrans==4.0.0-rc1
