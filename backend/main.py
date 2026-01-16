@@ -22,7 +22,6 @@ from pptx import Presentation
 from fastapi.background import BackgroundTasks
 from fastapi.responses import FileResponse, JSONResponse
 from googletrans import Translator
-from fastapi.responses import Response
 
 # -------------------- ENV SETUP --------------------
 load_dotenv()
@@ -77,7 +76,7 @@ app = FastAPI(
 # -------------------- CORS --------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -98,17 +97,6 @@ def serialize_mongo(doc):
     doc["_id"] = str(doc["_id"])
     return doc
 
-@app.options("/{full_path:path}")
-async def options_handler(full_path: str):
-    return Response(
-        status_code=200,
-        headers={
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-            "Access-Control-Allow-Headers": "*",
-        }
-    )
-
 # -------------------- ALL FUNCTIONALITIES --------------------
 
 # -------------------- Organization Profile Builder --------------------
@@ -117,17 +105,14 @@ class Geography(BaseModel):
     district: Optional[str] = None
     block: Optional[str] = None
 
-
 class ReachMetrics(BaseModel):
     schools: Optional[int] = Field(None, ge=0)
     students: Optional[int] = Field(None, ge=0)
     teachers: Optional[int] = Field(None, ge=0)
 
-
 class TeamExpertise(BaseModel):
     role: str
     count: int = Field(..., ge=0)
-
 
 class OrganizationProfileCreate(BaseModel):
     organization_name: str
@@ -137,7 +122,6 @@ class OrganizationProfileCreate(BaseModel):
     reach_metrics: Optional[ReachMetrics]
     team_size: int = Field(..., ge=1)
     team_expertise: Optional[List[TeamExpertise]]
-
 
 class OrganizationProfileDB(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
