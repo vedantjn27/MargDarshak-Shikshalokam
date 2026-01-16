@@ -22,6 +22,7 @@ from pptx import Presentation
 from fastapi.background import BackgroundTasks
 from fastapi.responses import FileResponse, JSONResponse
 from googletrans import Translator
+from fastapi.responses import Response
 
 # -------------------- ENV SETUP --------------------
 load_dotenv()
@@ -96,6 +97,17 @@ def utc_now():
 def serialize_mongo(doc):
     doc["_id"] = str(doc["_id"])
     return doc
+
+@app.options("/{full_path:path}")
+async def options_handler(full_path: str):
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
 
 # -------------------- ALL FUNCTIONALITIES --------------------
 
