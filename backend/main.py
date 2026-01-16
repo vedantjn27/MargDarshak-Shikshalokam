@@ -899,6 +899,18 @@ def generate_component_library(methodologies: List[Dict[str, Any]]):
         for c, sources in component_map.items()
     ]
 
+@app.get("/methodologies")
+def get_all_methodologies():
+
+    methodologies = list(
+        methodology_library_collection.find({}, {"_id": 0})
+    )
+
+    return {
+        "count": len(methodologies),
+        "methodologies": methodologies
+    }
+
 # METHODOLOGY SELECTION API
 @app.post("/methodologies", response_model=MethodologyResponse)
 def get_methodologies(payload: MethodologyFilterRequest):
